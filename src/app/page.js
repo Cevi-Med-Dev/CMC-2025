@@ -1,95 +1,62 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+var Airtable = require('airtable');
 
-export default function Home() {
+
+console.log("Loaded API Key:", process.env.AIRTABLE_API_KEY); // Debug log
+
+const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
+export default async function HomePage() {
+  
+
+  //  console.log(invoices,trips)
+  //      const invoiceData = invoices.map(invoice => ({
+    //        id: invoice.id,
+//        fields: invoice.fields,
+//      }));
+//      const tripData = trips.map(trip => ({
+  //        id: trip.id,
+//        fields: trip.fields,
+//      }));
+//  console.log(invoiceData,tripData)
+
+let records = [];
+try {
+    const callLogs = await base('Call log')
+    const trips = await base('Trips').select({fields: ["fldmrJexa9uCvZmjv", "fldreS4sSbdP4sIAw", "fldWbdKHVh1AwaTjw","fldnukPmJ1c238BsL","fldJvRrPwcUAj8OkD","fldDNSn509tcsFVbU","fldFuLbHvBLKcOJaQ","fldWoHM1UiBFIzezY", "fldxJelcAHsn3RNkO", "fldxJelcAHsn3RNkO","fldpWfWnpACuRaZXM", "fldPuTKyi2IXXj6Md", "fldkPcMScig2GwlWF"]}).firstPage();
+  
+    const invoices = await base('Invoices').select({fields: ["Name", "Order #","Phone","Customer", "Date", "Item", "EA Price","fldKPEpBfa6Ysr5kg"]}).firstPage();
+    console.log(base,callLogs,trips,invoices)
+    
+    // Map the records to extract only needed data
+    records = invoices.map(record => ({
+      id: record.id,
+      fields: record.fields,
+    }));
+  } catch (error) {
+    console.error("Error fetching data from Airtable:", error);
+  }
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+    <div>
+      <h1>Airtable Data</h1>
+      {records.length > 0 ? (
+        <ul>
+          {records.map((record) => (
+            <li key={record.id}>{JSON.stringify(record.fields)}</li>
+          ))}
+           <h1>Airtable Data</h1>
+     
+        {/* {invoiceData.map(item => (
+          <li key={item.id}>{JSON.stringify(item.fields)}</li>
+        ))}
+        {tripData.map(item => (
+          <li key={item.id}>{JSON.stringify(item.fields)}</li>
+        ))} */}
+      </ul>
+   
+        
+      ) : (
+        <p>No data available.</p>
+      )}
     </div>
   );
 }
