@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import base from '../../../lib/airtable'; // Import Airtable config
+import base from '../../lib/airtable'; // Import Airtable config
 
 export async function GET() {
   try {
